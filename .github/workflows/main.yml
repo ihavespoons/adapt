@@ -1,0 +1,29 @@
+name: Perform Bloodhound Scans
+on: [push]
+jobs:
+  Perform-Bloodhound-Scans:
+    runs-on: ubuntu-latest
+    container: securestackau/bloodhound-cli:latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+          fetch-depth: '0'
+      - name: perform-code-scan
+        shell: bash
+        env:
+          BH_API_KEY: ${{ secrets.BH_API_KEY }}
+          BH_APP_ID: ${{ secrets.BH_APP_ID }}
+          BH_SEVERITY: high
+        run:
+          bloodhound-cli code --type python
+      - name: perform-recon-scan
+        shell: bash
+        env:
+          BH_API_KEY: ${{ secrets.BH_API_KEY }}
+          BH_APP_ID: ${{ secrets.BH_APP_ID }}
+          BH_SEVERITY: high
+          BH_TARGET: nullsecure.com
+        run:
+          bloodhound-cli recon -t $BH_TARGET --realtime
